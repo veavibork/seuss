@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="452px" height="452px" viewBox="0 0 452 452" enable-background="new 0 0 452 452" xml:space="preserve">
+
+<radialGradient id="grad" cx="226" cy="226" r="260" gradientUnits="userSpaceOnUse">
+<stop offset="0" style="stop-color:#F91"/>
+<stop offset="1" style="stop-color:#B22"/>
+</radialGradient>
+
+<circle fill="#000" cx="226" cy="226" r="226"/>
+<g fill="url(#grad)">
+<path d="M196 12a212 212 0 00-150 91l6-5c34-29 53-38 82-37 19 1 35 6 51 16 11 6 29 24 35 34 9 15 13 31 14 52 3 39 9 57 24 74a87 87 0 00136-21c9-17 12-32 11-56-1-39-15-71-42-96a198 198 0 00-167-52z"/>
+<path d="M125 81c-22 4-44 13-60 26-39 31-60 83-55 135a216 216 0 00196 196l-13-5c-52-17-77-50-77-100 0-14 1-21 4-32 5-15 17-33 29-44l24-17c24-17 35-28 42-45 11-27 5-59-16-85a85 85 0 00-74-29z"/>
+<path d="M418 134l3 17c4 25 3 46-4 64-11 27-38 50-69 59-7 2-11 2-23 3-21 0-34-3-55-13-12-7-26-12-36-15-9-3-26-4-34-2a87 87 0 00-65 105c6 22 19 39 41 54a138 138 0 00108 21c36-8 65-24 93-53 40-43 61-92 61-148 0-28-3-48-10-68-4-12-11-29-11-24z"/>
+</g>
+</svg>
