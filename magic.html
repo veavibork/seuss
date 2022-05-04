@@ -32703,8 +32703,10 @@ function arrayEquals(a, b) {
 
 
 	function update(){
+
 		newpack.sort((a, b) => a[0][0].localeCompare(b[0][0]));
 		newpack.sort((a, b) => rtest(a, b));
+		newpack.sort((a, b) => a[1][2].localeCompare(b[1][2]));
 		
 		var packdisplay = "";
 		var mana = 0;
