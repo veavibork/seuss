@@ -1,0 +1,1302 @@
+<html>
+<head></script>
+
+<style>
+td {
+  padding: 15px;
+}
+</style>
+</head>
+<body>
+
+<table><tr><td width=150 valign="top">
+<input type="checkbox" class="boxed" value="Blue" checked><img width=12 src="icons/U.png">Blue (victim)<br>
+<input type="checkbox" class="boxed" value="Red" checked><img width=12 src="icons/R.png">Red (playful)<br>
+<input type="checkbox" class="boxed" value="Black" checked><img width=12 src="icons/B.png">Black (villain)<br>
+<input type="checkbox" class="boxed" value="White" checked><img width=12 src="icons/W.png">White (hero)<br>
+<input type="checkbox" class="boxed" value="Green" checked><img width=12 src="icons/G.png">Green (beast)
+</td><td width=150 valign="top">
+<input type="checkbox" class="boxed" value="Creature" checked><img width=12 src="icons/Creature_symbol.png">Creature<br>
+<input type="checkbox" class="boxed" value="Spell" checked><img width=12 src="icons/Instant_symbol.png">Spell<br>
+<input type="checkbox" class="boxed" value="Thing" checked><img width=12 src="icons/Enchantment_symbol.png">Thing<br>
+<br>
+</td><td width=150 valign="top">
+<input type="checkbox" class="boxed" value="Common" checked><img width=12 src="icons/common.svg">Common<br>
+<input type="checkbox" class="boxed" value="Uncommon" checked><img width=14 src="icons/uncommon.svg">Uncommon<br>
+<input type="checkbox" class="boxed" value="Rare" checked><img width=16 src="icons/rare.svg">Rare<br>
+<input type="checkbox" class="boxed" value="Mythic" checked><img width=18 src="icons/mythic.svg">Mythic<br>
+<br>
+</td></tr></table>
+
+<h1>LEWD WARNING THIS IS LEWDTOWN</h1>
+Note that words combo based on color picks. Less colors = more focus.<br>
+
+<button onclick="refresh()">Start over (refreshes combos)</button>
+<button onclick="hookup()">Single Draw</button>
+<button onclick="crunked()">Booster Pack</button>
+
+<table>
+<tr><td><h3>Word counts</h3>
+</td><td><h3>All combos</h3>
+</td><td><h3>Sorted draws</h3>
+</td><td><h3>Unsorted draws</h3>
+</td></tr>
+<tr><td padding=0 valign="top">
+<div id="countdisplay"></div>
+</td><td padding=0 valign="top">
+<div id="deckdisplay"></div>
+</td><td padding=0 valign="top">
+<div id="drawdisplay"></div>
+</td><td padding=0 valign="top">
+<div id="piledisplay"></div>
+</td></tr>
+</table>
+
+<script>
+
+const dict = [
+['Brute', 'subject', 'Black', 'Creature', 'Common'],
+['Creep', 'subject', 'Black', 'Creature', 'Common'],
+['Deserter', 'subject', 'Black', 'Creature', 'Common'],
+['Deviant', 'subject', 'Black', 'Creature', 'Common'],
+['Informer', 'subject', 'Black', 'Creature', 'Common'],
+['Intruder', 'subject', 'Black', 'Creature', 'Common'],
+['Invader', 'subject', 'Black', 'Creature', 'Common'],
+['Marauder', 'subject', 'Black', 'Creature', 'Common'],
+['Menace', 'subject', 'Black', 'Creature', 'Common'],
+['Plunderer', 'subject', 'Black', 'Creature', 'Common'],
+['Raider', 'subject', 'Black', 'Creature', 'Common'],
+['Renegade', 'subject', 'Black', 'Creature', 'Common'],
+['Stalker', 'subject', 'Black', 'Creature', 'Common'],
+['Thug', 'subject', 'Black', 'Creature', 'Common'],
+['Trespasser', 'subject', 'Black', 'Creature', 'Common'],
+['Flayer', 'subject', 'Black', 'Creature', 'Mythic'],
+['Harvester', 'subject', 'Black', 'Creature', 'Mythic'],
+['Outsider', 'subject', 'Black', 'Creature', 'Mythic'],
+['Queen', 'subject', 'Black', 'Creature', 'Mythic'],
+['Reaper', 'subject', 'Black', 'Creature', 'Mythic'],
+['Fatale', 'subject', 'Black', 'Creature', 'Rare'],
+['Madam', 'subject', 'Black', 'Creature', 'Rare'],
+['Master', 'subject', 'Black', 'Creature', 'Rare'],
+['Mistress', 'subject', 'Black', 'Creature', 'Rare'],
+['Spy', 'subject', 'Black', 'Creature', 'Rare'],
+['Torturer', 'subject', 'Black', 'Creature', 'Rare'],
+['Warden', 'subject', 'Black', 'Creature', 'Rare'],
+['Witch', 'subject', 'Black', 'Creature', 'Rare'],
+['Assassin', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Boss', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Breeder', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Broker', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Dealer', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Imposter', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Instigator', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Mentor', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Provoker', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Slaver', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Trader', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Traitor', 'subject', 'Black', 'Creature', 'Uncommon'],
+['Abuse', 'verb', 'Black', 'Spell', 'Common'],
+['Assault', 'verb', 'Black', 'Spell', 'Common'],
+['Attack', 'verb', 'Black', 'Spell', 'Common'],
+['Avaricious', 'adjective', 'Black', 'Spell', 'Common'],
+['Bad', 'adjective', 'Black', 'Spell', 'Common'],
+['Bitter', 'adjective', 'Black', 'Spell', 'Common'],
+['Black', 'adjective', 'Black', 'Spell', 'Common'],
+['Callous', 'adjective', 'Black', 'Spell', 'Common'],
+['Covetous', 'adjective', 'Black', 'Spell', 'Common'],
+['Cruel', 'adjective', 'Black', 'Spell', 'Common'],
+['Drag', 'verb', 'Black', 'Spell', 'Common'],
+['Envious', 'adjective', 'Black', 'Spell', 'Common'],
+['Extract', 'verb', 'Black', 'Spell', 'Common'],
+['Fill', 'verb', 'Black', 'Spell', 'Common'],
+['Forbidding', 'adjective', 'Black', 'Spell', 'Common'],
+['Forceful', 'adjective', 'Black', 'Spell', 'Common'],
+['Grasp', 'verb', 'Black', 'Spell', 'Common'],
+['Grim', 'adjective', 'Black', 'Spell', 'Common'],
+['Hard', 'adjective', 'Black', 'Spell', 'Common'],
+['Harsh', 'adjective', 'Black', 'Spell', 'Common'],
+['Iron', 'adjective', 'Black', 'Spell', 'Common'],
+['Leather', 'adjective', 'Black', 'Spell', 'Common'],
+['Merciless', 'adjective', 'Black', 'Spell', 'Common'],
+['Midnight', 'adjective', 'Black', 'Spell', 'Common'],
+['Obsessed', 'adjective', 'Black', 'Spell', 'Common'],
+['Pierce', 'verb', 'Black', 'Spell', 'Common'],
+['Pressure', 'verb', 'Black', 'Spell', 'Common'],
+['Probe', 'verb', 'Black', 'Spell', 'Common'],
+['Pump', 'verb', 'Black', 'Spell', 'Common'],
+['Ravage', 'verb', 'Black', 'Spell', 'Common'],
+['Relentless', 'adjective', 'Black', 'Spell', 'Common'],
+['Ruthless', 'adjective', 'Black', 'Spell', 'Common'],
+['Scornful', 'adjective', 'Black', 'Spell', 'Common'],
+['Scrape', 'verb', 'Black', 'Spell', 'Common'],
+['Shock', 'verb', 'Black', 'Spell', 'Common'],
+['Steel', 'adjective', 'Black', 'Spell', 'Common'],
+['Stun', 'verb', 'Black', 'Spell', 'Common'],
+['Twist', 'verb', 'Black', 'Spell', 'Common'],
+['Unforgiving', 'adjective', 'Black', 'Spell', 'Common'],
+['Unstable', 'adjective', 'Black', 'Spell', 'Common'],
+['Velvet', 'adjective', 'Black', 'Spell', 'Common'],
+['Violent', 'adjective', 'Black', 'Spell', 'Common'],
+['Weaken', 'verb', 'Black', 'Spell', 'Common'],
+['Yandere', 'adjective', 'Black', 'Spell', 'Common'],
+['Arcane', 'adjective', 'Black', 'Spell', 'Mythic'],
+['Banish', 'verb', 'Black', 'Spell', 'Mythic'],
+['Banished', 'adjective', 'Black', 'Spell', 'Mythic'],
+['Clone', 'verb', 'Black', 'Spell', 'Mythic'],
+['Corrupt', 'verb', 'Black', 'Spell', 'Mythic'],
+['Damned', 'adjective', 'Black', 'Spell', 'Mythic'],
+['Forbidden', 'adjective', 'Black', 'Spell', 'Mythic'],
+['Infernal', 'adjective', 'Black', 'Spell', 'Mythic'],
+['Invade', 'verb', 'Black', 'Spell', 'Mythic'],
+['Ruin', 'verb', 'Black', 'Spell', 'Mythic'],
+['Unforgiven', 'adjective', 'Black', 'Spell', 'Mythic'],
+['Breach', 'verb', 'Black', 'Spell', 'Rare'],
+['Break', 'verb', 'Black', 'Spell', 'Rare'],
+['Capture', 'verb', 'Black', 'Spell', 'Rare'],
+['Command', 'verb', 'Black', 'Spell', 'Rare'],
+['Control', 'verb', 'Black', 'Spell', 'Rare'],
+['Corrupt', 'adjective', 'Black', 'Spell', 'Rare'],
+['Defiled', 'adjective', 'Black', 'Spell', 'Rare'],
+['Degenerate', 'adjective', 'Black', 'Spell', 'Rare'],
+['Demented', 'adjective', 'Black', 'Spell', 'Rare'],
+['Dominate', 'verb', 'Black', 'Spell', 'Rare'],
+['Evil', 'adjective', 'Black', 'Spell', 'Rare'],
+['Overwhelm', 'verb', 'Black', 'Spell', 'Rare'],
+['Profane', 'adjective', 'Black', 'Spell', 'Rare'],
+['Punish', 'verb', 'Black', 'Spell', 'Rare'],
+['Tainted', 'adjective', 'Black', 'Spell', 'Rare'],
+['Twisted', 'adjective', 'Black', 'Spell', 'Rare'],
+['Vile', 'adjective', 'Black', 'Spell', 'Rare'],
+['Warped', 'adjective', 'Black', 'Spell', 'Rare'],
+['Abhorrent', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Abject', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Barbaric', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Chant', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Copy', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Dark', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Death', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Demand', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Expand', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Expose', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Foul', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Foul', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Loot', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Low', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Mad', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Monstrous', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Plunder', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Sabotage', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Sinister', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Smirk', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Spectral', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Threaten', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Torture', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Violate', 'verb', 'Black', 'Spell', 'Uncommon'],
+['Violated', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Wicked', 'adjective', 'Black', 'Spell', 'Uncommon'],
+['Execution', 'thing', 'Black', 'Thing', 'Common'],
+['Abuse', 'thing', 'Black', 'Thing', 'Common'],
+['Ambush', 'thing', 'Black', 'Thing', 'Common'],
+['Assault', 'thing', 'Black', 'Thing', 'Common'],
+['Compulsion', 'thing', 'Black', 'Thing', 'Common'],
+['Conflict', 'thing', 'Black', 'Thing', 'Common'],
+['Conspiracy', 'thing', 'Black', 'Thing', 'Common'],
+['Corruption', 'thing', 'Black', 'Thing', 'Common'],
+['Extract', 'thing', 'Black', 'Thing', 'Common'],
+['Grasp', 'thing', 'Black', 'Thing', 'Common'],
+['Invasion', 'thing', 'Black', 'Thing', 'Common'],
+['Lie', 'thing', 'Black', 'Thing', 'Common'],
+['Mania', 'thing', 'Black', 'Thing', 'Common'],
+['Midnight', 'thing', 'Black', 'Thing', 'Common'],
+['Obsession', 'thing', 'Black', 'Thing', 'Common'],
+['Offensive', 'thing', 'Black', 'Thing', 'Common'],
+['Onslaught', 'thing', 'Black', 'Thing', 'Common'],
+['Plot', 'thing', 'Black', 'Thing', 'Common'],
+['Plunder', 'thing', 'Black', 'Thing', 'Common'],
+['Pressure', 'thing', 'Black', 'Thing', 'Common'],
+['Rage', 'thing', 'Black', 'Thing', 'Common'],
+['Revenge', 'thing', 'Black', 'Thing', 'Common'],
+['Sabotage', 'thing', 'Black', 'Thing', 'Common'],
+['Scheme', 'thing', 'Black', 'Thing', 'Common'],
+['Thought', 'thing', 'Black', 'Thing', 'Common'],
+['Threat', 'thing', 'Black', 'Thing', 'Common'],
+['Treachery', 'thing', 'Black', 'Thing', 'Common'],
+['Violence', 'thing', 'Black', 'Thing', 'Common'],
+['Vitae', 'thing', 'Black', 'Thing', 'Common'],
+['Whip', 'thing', 'Black', 'Thing', 'Common'],
+['Fate', 'thing', 'Black', 'Thing', 'Mythic'],
+['Incursion', 'thing', 'Black', 'Thing', 'Mythic'],
+['Omen', 'thing', 'Black', 'Thing', 'Mythic'],
+['Shadow', 'thing', 'Black', 'Thing', 'Mythic'],
+['Sin', 'thing', 'Black', 'Thing', 'Mythic'],
+['Arena', 'thing', 'Black', 'Thing', 'Rare'],
+['Border', 'thing', 'Black', 'Thing', 'Rare'],
+['Castle', 'thing', 'Black', 'Thing', 'Rare'],
+['Dungeon', 'thing', 'Black', 'Thing', 'Rare'],
+['Mine', 'thing', 'Black', 'Thing', 'Rare'],
+['Penthouse', 'thing', 'Black', 'Thing', 'Rare'],
+['Prison', 'thing', 'Black', 'Thing', 'Rare'],
+['Throne', 'thing', 'Black', 'Thing', 'Rare'],
+['Tower', 'thing', 'Black', 'Thing', 'Rare'],
+['Bone', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Cage', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Cell', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Contract', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Curse', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Deed', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Drug', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Grave', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Ichor', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Lock', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Loot', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Mind', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Office', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Pillory', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Rack', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Screen', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Spiral', 'thing', 'Black', 'Thing', 'Uncommon'],
+['Addict', 'subject', 'Blue', 'Creature', 'Common'],
+['Aide', 'subject', 'Blue', 'Creature', 'Common'],
+['Assistant', 'subject', 'Blue', 'Creature', 'Common'],
+['Attendant', 'subject', 'Blue', 'Creature', 'Common'],
+['Concubine', 'subject', 'Blue', 'Creature', 'Common'],
+['Courtesan', 'subject', 'Blue', 'Creature', 'Common'],
+['Doxy', 'subject', 'Blue', 'Creature', 'Common'],
+['Girl', 'subject', 'Blue', 'Creature', 'Common'],
+['Hooker', 'subject', 'Blue', 'Creature', 'Common'],
+['Jezebel', 'subject', 'Blue', 'Creature', 'Common'],
+['Prostitute', 'subject', 'Blue', 'Creature', 'Common'],
+['Waif', 'subject', 'Blue', 'Creature', 'Common'],
+['Walker', 'subject', 'Blue', 'Creature', 'Common'],
+['Wench', 'subject', 'Blue', 'Creature', 'Common'],
+['Whore', 'subject', 'Blue', 'Creature', 'Common'],
+['Offering', 'subject', 'Blue', 'Creature', 'Mythic'],
+['Puppet', 'subject', 'Blue', 'Creature', 'Mythic'],
+['Sacrifice', 'subject', 'Blue', 'Creature', 'Mythic'],
+['Tribute', 'subject', 'Blue', 'Creature', 'Mythic'],
+['Vassal', 'subject', 'Blue', 'Creature', 'Mythic'],
+['Bitch', 'subject', 'Blue', 'Creature', 'Rare'],
+['Bucket', 'subject', 'Blue', 'Creature', 'Rare'],
+['Doll', 'subject', 'Blue', 'Creature', 'Rare'],
+['Mark', 'subject', 'Blue', 'Creature', 'Rare'],
+['Mount', 'subject', 'Blue', 'Creature', 'Rare'],
+['Quaddie', 'subject', 'Blue', 'Creature', 'Rare'],
+['Slave', 'subject', 'Blue', 'Creature', 'Rare'],
+['Thrall', 'subject', 'Blue', 'Creature', 'Rare'],
+['Captive', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Convict', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Criminal', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Hostage', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Maid', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Minion', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Prey', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Prisoner', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Servant', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Suspect', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Underling', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Victim', 'subject', 'Blue', 'Creature', 'Uncommon'],
+['Blind', 'adjective', 'Blue', 'Spell', 'Common'],
+['Blue', 'adjective', 'Blue', 'Spell', 'Common'],
+['Bound', 'adjective', 'Blue', 'Spell', 'Common'],
+['Bulge', 'verb', 'Blue', 'Spell', 'Common'],
+['Bundled', 'adjective', 'Blue', 'Spell', 'Common'],
+['Call', 'adjective', 'Blue', 'Spell', 'Common'],
+['Chained', 'adjective', 'Blue', 'Spell', 'Common'],
+['Clench', 'verb', 'Blue', 'Spell', 'Common'],
+['Contract', 'verb', 'Blue', 'Spell', 'Common'],
+['Crawling', 'adjective', 'Blue', 'Spell', 'Common'],
+['Curl', 'verb', 'Blue', 'Spell', 'Common'],
+['Degraded', 'adjective', 'Blue', 'Spell', 'Common'],
+['Drawn', 'adjective', 'Blue', 'Spell', 'Common'],
+['Edge', 'verb', 'Blue', 'Spell', 'Common'],
+['Gluck', 'verb', 'Blue', 'Spell', 'Common'],
+['Grunt', 'verb', 'Blue', 'Spell', 'Common'],
+['Gulp', 'verb', 'Blue', 'Spell', 'Common'],
+['Guzzle', 'verb', 'Blue', 'Spell', 'Common'],
+['Mounted', 'adjective', 'Blue', 'Spell', 'Common'],
+['Naked', 'adjective', 'Blue', 'Spell', 'Common'],
+['Painted', 'adjective', 'Blue', 'Spell', 'Common'],
+['Quiver', 'verb', 'Blue', 'Spell', 'Common'],
+['Restrained', 'adjective', 'Blue', 'Spell', 'Common'],
+['Rubber', 'adjective', 'Blue', 'Spell', 'Common'],
+['Shameful', 'adjective', 'Blue', 'Spell', 'Common'],
+['Shiver', 'verb', 'Blue', 'Spell', 'Common'],
+['Sink', 'verb', 'Blue', 'Spell', 'Common'],
+['Stretch', 'verb', 'Blue', 'Spell', 'Common'],
+['Swallow', 'verb', 'Blue', 'Spell', 'Common'],
+['Swollen', 'adjective', 'Blue', 'Spell', 'Common'],
+['Thrashing', 'adjective', 'Blue', 'Spell', 'Common'],
+['Tormented', 'adjective', 'Blue', 'Spell', 'Common'],
+['Unclean', 'adjective', 'Blue', 'Spell', 'Common'],
+['Writhing', 'adjective', 'Blue', 'Spell', 'Common'],
+['Break', 'verb', 'Blue', 'Spell', 'Mythic'],
+['Condemned', 'adjective', 'Blue', 'Spell', 'Mythic'],
+['Exiled', 'adjective', 'Blue', 'Spell', 'Mythic'],
+['Faint', 'verb', 'Blue', 'Spell', 'Mythic'],
+['Fallen', 'adjective', 'Blue', 'Spell', 'Mythic'],
+['Obey', 'verb', 'Blue', 'Spell', 'Mythic'],
+['Outcast', 'adjective', 'Blue', 'Spell', 'Mythic'],
+['Sacrificial', 'adjective', 'Blue', 'Spell', 'Mythic'],
+['Submit', 'verb', 'Blue', 'Spell', 'Mythic'],
+['Surrender', 'verb', 'Blue', 'Spell', 'Mythic'],
+['Blind', 'verb', 'Blue', 'Spell', 'Rare'],
+['Broken', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Conditioned', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Contort', 'verb', 'Blue', 'Spell', 'Rare'],
+['Convulse', 'verb', 'Blue', 'Spell', 'Rare'],
+['Daze', 'verb', 'Blue', 'Spell', 'Rare'],
+['Helpless', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Panic', 'verb', 'Blue', 'Spell', 'Rare'],
+['Pliant', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Quaddie', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Ruined', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Spasm', 'verb', 'Blue', 'Spell', 'Rare'],
+['Suffer', 'verb', 'Blue', 'Spell', 'Rare'],
+['Trained', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Unbirth', 'verb', 'Blue', 'Spell', 'Rare'],
+['Womb', 'adjective', 'Blue', 'Spell', 'Rare'],
+['Ache', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Captured', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Choke', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Claimed', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Contracted', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Cry', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Enslaved', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Exposed', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Flinch', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Forgotten', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Gasp', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Groan', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Lost', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Missing', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Paid', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Recoil', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Sample', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Shudder', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Sold', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Squirm', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Stolen', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Token', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Vulnerable', 'adjective', 'Blue', 'Spell', 'Uncommon'],
+['Wail', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Weep', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Writhe', 'verb', 'Blue', 'Spell', 'Uncommon'],
+['Ass', 'thing', 'Blue', 'Thing', 'Common'],
+['Breast', 'thing', 'Blue', 'Thing', 'Common'],
+['Breath', 'thing', 'Blue', 'Thing', 'Common'],
+['Bruise', 'thing', 'Blue', 'Thing', 'Common'],
+['Bust', 'thing', 'Blue', 'Thing', 'Common'],
+['Chain', 'thing', 'Blue', 'Thing', 'Common'],
+['Clamp', 'thing', 'Blue', 'Thing', 'Common'],
+['Cloth', 'thing', 'Blue', 'Thing', 'Common'],
+['Collar', 'thing', 'Blue', 'Thing', 'Common'],
+['Flesh', 'thing', 'Blue', 'Thing', 'Common'],
+['Fluid', 'thing', 'Blue', 'Thing', 'Common'],
+['Gag', 'thing', 'Blue', 'Thing', 'Common'],
+['Harness', 'thing', 'Blue', 'Thing', 'Common'],
+['Leash', 'thing', 'Blue', 'Thing', 'Common'],
+['Limb', 'thing', 'Blue', 'Thing', 'Common'],
+['Milk', 'thing', 'Blue', 'Thing', 'Common'],
+['Mouth', 'thing', 'Blue', 'Thing', 'Common'],
+['Piss', 'thing', 'Blue', 'Thing', 'Common'],
+['Scream', 'thing', 'Blue', 'Thing', 'Common'],
+['Skin', 'thing', 'Blue', 'Thing', 'Common'],
+['Sleeve', 'thing', 'Blue', 'Thing', 'Common'],
+['Tear', 'thing', 'Blue', 'Thing', 'Common'],
+['Throat', 'thing', 'Blue', 'Thing', 'Common'],
+['Tongue', 'thing', 'Blue', 'Thing', 'Common'],
+['Toy', 'thing', 'Blue', 'Thing', 'Common'],
+['Welt', 'thing', 'Blue', 'Thing', 'Common'],
+['Delirium', 'thing', 'Blue', 'Thing', 'Mythic'],
+['Failure', 'thing', 'Blue', 'Thing', 'Mythic'],
+['Lament', 'thing', 'Blue', 'Thing', 'Mythic'],
+['Peril', 'thing', 'Blue', 'Thing', 'Mythic'],
+['Vulnerability', 'thing', 'Blue', 'Thing', 'Mythic'],
+['Agony', 'thing', 'Blue', 'Thing', 'Rare'],
+['Box', 'thing', 'Blue', 'Thing', 'Rare'],
+['Crate', 'thing', 'Blue', 'Thing', 'Rare'],
+['Distress', 'thing', 'Blue', 'Thing', 'Rare'],
+['Dread', 'thing', 'Blue', 'Thing', 'Rare'],
+['Fear', 'thing', 'Blue', 'Thing', 'Rare'],
+['Grief', 'thing', 'Blue', 'Thing', 'Rare'],
+['Shock', 'thing', 'Blue', 'Thing', 'Rare'],
+['Sob', 'thing', 'Blue', 'Thing', 'Rare'],
+['Brand', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Case', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Chest', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Doll', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Door', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Hole', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Mask', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Mold', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Piston', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Pump', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Rain', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Wall', 'thing', 'Blue', 'Thing', 'Uncommon'],
+['Doll', 'subject', 'Green', 'Creature', 'Common'],
+['Goblin', 'subject', 'Green', 'Creature', 'Common'],
+['Harpy', 'subject', 'Green', 'Creature', 'Common'],
+['Hound', 'subject', 'Green', 'Creature', 'Common'],
+['Kobold', 'subject', 'Green', 'Creature', 'Common'],
+['Parasite', 'subject', 'Green', 'Creature', 'Common'],
+['Pixie', 'subject', 'Green', 'Creature', 'Common'],
+['Satyr', 'subject', 'Green', 'Creature', 'Common'],
+['Snake', 'subject', 'Green', 'Creature', 'Common'],
+['Spider', 'subject', 'Green', 'Creature', 'Common'],
+['Sprite', 'subject', 'Green', 'Creature', 'Common'],
+['Tentacle', 'subject', 'Green', 'Creature', 'Common'],
+['Vine', 'subject', 'Green', 'Creature', 'Common'],
+['Wolf', 'subject', 'Green', 'Creature', 'Common'],
+['Worm', 'subject', 'Green', 'Creature', 'Common'],
+['Dragon', 'subject', 'Green', 'Creature', 'Mythic'],
+['Engine', 'subject', 'Green', 'Creature', 'Mythic'],
+['Kraken', 'subject', 'Green', 'Creature', 'Mythic'],
+['Spirit', 'subject', 'Green', 'Creature', 'Mythic'],
+['Xenomorph', 'subject', 'Green', 'Creature', 'Mythic'],
+['Cube', 'subject', 'Green', 'Creature', 'Rare'],
+['Golem', 'subject', 'Green', 'Creature', 'Rare'],
+['Mimic', 'subject', 'Green', 'Creature', 'Rare'],
+['Minotaur', 'subject', 'Green', 'Creature', 'Rare'],
+['Monster', 'subject', 'Green', 'Creature', 'Rare'],
+['Ogre', 'subject', 'Green', 'Creature', 'Rare'],
+['Troll', 'subject', 'Green', 'Creature', 'Rare'],
+['Yeti', 'subject', 'Green', 'Creature', 'Rare'],
+['Bear', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Bull', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Crab', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Elk', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Horse', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Hunter', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Kudzu', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Mannequin', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Orc', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Serpent', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Tree', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Wall', 'subject', 'Green', 'Creature', 'Uncommon'],
+['Biting', 'adjective', 'Green', 'Spell', 'Common'],
+['Buck', 'verb', 'Green', 'Spell', 'Common'],
+['Chomp', 'verb', 'Green', 'Spell', 'Common'],
+['Coil', 'verb', 'Green', 'Spell', 'Common'],
+['Damp', 'adjective', 'Green', 'Spell', 'Common'],
+['Dormant', 'adjective', 'Green', 'Spell', 'Common'],
+['Driven', 'adjective', 'Green', 'Spell', 'Common'],
+['Feral', 'adjective', 'Green', 'Spell', 'Common'],
+['Gnaw', 'verb', 'Green', 'Spell', 'Common'],
+['Hiss', 'verb', 'Green', 'Spell', 'Common'],
+['Hungry', 'adjective', 'Green', 'Spell', 'Common'],
+['Knead', 'verb', 'Green', 'Spell', 'Common'],
+['Lick', 'verb', 'Green', 'Spell', 'Common'],
+['Lunging', 'adjective', 'Green', 'Spell', 'Common'],
+['Nuzzle', 'verb', 'Green', 'Spell', 'Common'],
+['Roaring', 'adjective', 'Green', 'Spell', 'Common'],
+['Scamper', 'verb', 'Green', 'Spell', 'Common'],
+['Slippery', 'adjective', 'Green', 'Spell', 'Common'],
+['Slither', 'verb', 'Green', 'Spell', 'Common'],
+['Snarl', 'verb', 'Green', 'Spell', 'Common'],
+['Spring', 'verb', 'Green', 'Spell', 'Common'],
+['Starving', 'adjective', 'Green', 'Spell', 'Common'],
+['Stray', 'adjective', 'Green', 'Spell', 'Common'],
+['Stud', 'adjective', 'Green', 'Spell', 'Common'],
+['Thrash', 'verb', 'Green', 'Spell', 'Common'],
+['Wandering', 'adjective', 'Green', 'Spell', 'Common'],
+['Wild', 'adjective', 'Green', 'Spell', 'Common'],
+['Bloom', 'verb', 'Green', 'Spell', 'Mythic'],
+['Burst', 'verb', 'Green', 'Spell', 'Mythic'],
+['Engulf', 'verb', 'Green', 'Spell', 'Mythic'],
+['Envelop', 'verb', 'Green', 'Spell', 'Mythic'],
+['Liquid', 'adjective', 'Green', 'Spell', 'Mythic'],
+['Mutant', 'adjective', 'Green', 'Spell', 'Mythic'],
+['Rust', 'adjective', 'Green', 'Spell', 'Mythic'],
+['Scorch', 'verb', 'Green', 'Spell', 'Mythic'],
+['Stone', 'adjective', 'Green', 'Spell', 'Mythic'],
+['Storm', 'adjective', 'Green', 'Spell', 'Mythic'],
+['Surge', 'verb', 'Green', 'Spell', 'Mythic'],
+['Swallow', 'verb', 'Green', 'Spell', 'Mythic'],
+['Ambush', 'verb', 'Green', 'Spell', 'Rare'],
+['Bury', 'verb', 'Green', 'Spell', 'Rare'],
+['Click', 'verb', 'Green', 'Spell', 'Rare'],
+['Coccoon', 'verb', 'Green', 'Spell', 'Rare'],
+['Dart', 'verb', 'Green', 'Spell', 'Rare'],
+['Drag', 'verb', 'Green', 'Spell', 'Rare'],
+['Fragrant', 'adjective', 'Green', 'Spell', 'Rare'],
+['Gaping', 'adjective', 'Green', 'Spell', 'Rare'],
+['Green', 'adjective', 'Green', 'Spell', 'Rare'],
+['Harvest', 'adjective', 'Green', 'Spell', 'Rare'],
+['Pounce', 'verb', 'Green', 'Spell', 'Rare'],
+['Spotted', 'adjective', 'Green', 'Spell', 'Rare'],
+['Stalk', 'verb', 'Green', 'Spell', 'Rare'],
+['Striped', 'adjective', 'Green', 'Spell', 'Rare'],
+['Terrible', 'adjective', 'Green', 'Spell', 'Rare'],
+['Towering', 'adjective', 'Green', 'Spell', 'Rare'],
+['Breed', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Burrow', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Constrict', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Crush', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Devouring', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Dire', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Malignant', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Menacing', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Milk', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Poisonous', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Rapacious', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Rape', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Ravenous', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Roar', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Savage', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Swoop', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Tangle', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Thorned', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Throb', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Toxic', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Trample', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Venomous', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Voracious', 'adjective', 'Green', 'Spell', 'Uncommon'],
+['Whirl', 'verb', 'Green', 'Spell', 'Uncommon'],
+['Aggro', 'thing', 'Green', 'Thing', 'Common'],
+['Blood', 'thing', 'Green', 'Thing', 'Common'],
+['Claw', 'thing', 'Green', 'Thing', 'Common'],
+['Clutch', 'thing', 'Green', 'Thing', 'Common'],
+['Egg', 'thing', 'Green', 'Thing', 'Common'],
+['Fang', 'thing', 'Green', 'Thing', 'Common'],
+['Heat', 'thing', 'Green', 'Thing', 'Common'],
+['Hunt', 'thing', 'Green', 'Thing', 'Common'],
+['Maw', 'thing', 'Green', 'Thing', 'Common'],
+['Night', 'thing', 'Green', 'Thing', 'Common'],
+['Pack', 'thing', 'Green', 'Thing', 'Common'],
+['Sap', 'thing', 'Green', 'Thing', 'Common'],
+['Tendril', 'thing', 'Green', 'Thing', 'Common'],
+['Dawn', 'thing', 'Green', 'Thing', 'Mythic'],
+['Dusk', 'thing', 'Green', 'Thing', 'Mythic'],
+['Moon', 'thing', 'Green', 'Thing', 'Mythic'],
+['Storm', 'thing', 'Green', 'Thing', 'Mythic'],
+['Tempest', 'thing', 'Green', 'Thing', 'Mythic'],
+['Twilight', 'thing', 'Green', 'Thing', 'Mythic'],
+['Brain', 'thing', 'Green', 'Thing', 'Rare'],
+['Camp', 'thing', 'Green', 'Thing', 'Rare'],
+['Drain', 'thing', 'Green', 'Thing', 'Rare'],
+['Hazard', 'thing', 'Green', 'Thing', 'Rare'],
+['Pipe', 'thing', 'Green', 'Thing', 'Rare'],
+['Trail', 'thing', 'Green', 'Thing', 'Rare'],
+['Tunnel', 'thing', 'Green', 'Thing', 'Rare'],
+['Vent', 'thing', 'Green', 'Thing', 'Rare'],
+['Ambush', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Bloom', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Burrow', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Display', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Flood', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Flower', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Lair', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Nest', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Pit', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Pod', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Saddle', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Seed', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Stream', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Water', 'thing', 'Green', 'Thing', 'Uncommon'],
+['Bimbo', 'subject', 'Red', 'Creature', 'Common'],
+['Brat', 'subject', 'Red', 'Creature', 'Common'],
+['Drifter', 'subject', 'Red', 'Creature', 'Common'],
+['Flirt', 'subject', 'Red', 'Creature', 'Common'],
+['Glutton', 'subject', 'Red', 'Creature', 'Common'],
+['Harlot', 'subject', 'Red', 'Creature', 'Common'],
+['Hustler', 'subject', 'Red', 'Creature', 'Common'],
+['Lecher', 'subject', 'Red', 'Creature', 'Common'],
+['Scamp', 'subject', 'Red', 'Creature', 'Common'],
+['Slut', 'subject', 'Red', 'Creature', 'Common'],
+['Stripper', 'subject', 'Red', 'Creature', 'Common'],
+['Stud', 'subject', 'Red', 'Creature', 'Common'],
+['Tart', 'subject', 'Red', 'Creature', 'Common'],
+['Tease', 'subject', 'Red', 'Creature', 'Common'],
+['Tramp', 'subject', 'Red', 'Creature', 'Common'],
+['Incubus', 'subject', 'Red', 'Creature', 'Mythic'],
+['Nymph', 'subject', 'Red', 'Creature', 'Mythic'],
+['Sinner', 'subject', 'Red', 'Creature', 'Mythic'],
+['Stranger', 'subject', 'Red', 'Creature', 'Mythic'],
+['Succubus', 'subject', 'Red', 'Creature', 'Mythic'],
+['Artist', 'subject', 'Red', 'Creature', 'Rare'],
+['Bard', 'subject', 'Red', 'Creature', 'Rare'],
+['Explorer', 'subject', 'Red', 'Creature', 'Rare'],
+['Merchant', 'subject', 'Red', 'Creature', 'Rare'],
+['Princess', 'subject', 'Red', 'Creature', 'Rare'],
+['Scout', 'subject', 'Red', 'Creature', 'Rare'],
+['Seducer', 'subject', 'Red', 'Creature', 'Rare'],
+['Thief', 'subject', 'Red', 'Creature', 'Rare'],
+['Buck', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Cheerleader', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Dancer', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Entertainer', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Hellion', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Minx', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Moll', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Pledge', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Rascal', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Rogue', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Temptress', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Vixen', 'subject', 'Red', 'Creature', 'Uncommon'],
+['Arch', 'verb', 'Red', 'Spell', 'Common'],
+['Beckon', 'verb', 'Red', 'Spell', 'Common'],
+['Bounce', 'verb', 'Red', 'Spell', 'Common'],
+['Bratty', 'adjective', 'Red', 'Spell', 'Common'],
+['Caress', 'verb', 'Red', 'Spell', 'Common'],
+['Carnal', 'adjective', 'Red', 'Spell', 'Common'],
+['Coarse', 'adjective', 'Red', 'Spell', 'Common'],
+['Croon', 'verb', 'Red', 'Spell', 'Common'],
+['Crude', 'adjective', 'Red', 'Spell', 'Common'],
+['Dance', 'verb', 'Red', 'Spell', 'Common'],
+['Delve', 'verb', 'Red', 'Spell', 'Common'],
+['Dirty', 'adjective', 'Red', 'Spell', 'Common'],
+['Easy', 'adjective', 'Red', 'Spell', 'Common'],
+['Flex', 'verb', 'Red', 'Spell', 'Common'],
+['Fondle', 'verb', 'Red', 'Spell', 'Common'],
+['Fuck', 'verb', 'Red', 'Spell', 'Common'],
+['Gluttonous', 'adjective', 'Red', 'Spell', 'Common'],
+['Graze', 'verb', 'Red', 'Spell', 'Common'],
+['Greedy', 'adjective', 'Red', 'Spell', 'Common'],
+['Grind', 'verb', 'Red', 'Spell', 'Common'],
+['Grope', 'verb', 'Red', 'Spell', 'Common'],
+['Heaving', 'adjective', 'Red', 'Spell', 'Common'],
+['Horny', 'adjective', 'Red', 'Spell', 'Common'],
+['Husky', 'adjective', 'Red', 'Spell', 'Common'],
+['Impure', 'adjective', 'Red', 'Spell', 'Common'],
+['Indecent', 'adjective', 'Red', 'Spell', 'Common'],
+['Jingling', 'adjective', 'Red', 'Spell', 'Common'],
+['Juicy', 'adjective', 'Red', 'Spell', 'Common'],
+['Lascivious', 'adjective', 'Red', 'Spell', 'Common'],
+['Laugh', 'verb', 'Red', 'Spell', 'Common'],
+['Lecherous', 'adjective', 'Red', 'Spell', 'Common'],
+['Lewd', 'adjective', 'Red', 'Spell', 'Common'],
+['Linger', 'verb', 'Red', 'Spell', 'Common'],
+['Lust', 'adjective', 'Red', 'Spell', 'Common'],
+['Lusty', 'adjective', 'Red', 'Spell', 'Common'],
+['Moan', 'verb', 'Red', 'Spell', 'Common'],
+['Nasty', 'adjective', 'Red', 'Spell', 'Common'],
+['Nomadic', 'adjective', 'Red', 'Spell', 'Common'],
+['Palm', 'verb', 'Red', 'Spell', 'Common'],
+['Pant', 'verb', 'Red', 'Spell', 'Common'],
+['Perverted', 'adjective', 'Red', 'Spell', 'Common'],
+['Pierced', 'adjective', 'Red', 'Spell', 'Common'],
+['Pinch', 'verb', 'Red', 'Spell', 'Common'],
+['Playful', 'adjective', 'Red', 'Spell', 'Common'],
+['Plump', 'adjective', 'Red', 'Spell', 'Common'],
+['Plunge', 'verb', 'Red', 'Spell', 'Common'],
+['Provoked', 'adjective', 'Red', 'Spell', 'Common'],
+['Raunchy', 'adjective', 'Red', 'Spell', 'Common'],
+['Reckless', 'adjective', 'Red', 'Spell', 'Common'],
+['Red', 'adjective', 'Red', 'Spell', 'Common'],
+['Ride', 'verb', 'Red', 'Spell', 'Common'],
+['Ripe', 'adjective', 'Red', 'Spell', 'Common'],
+['Rise', 'verb', 'Red', 'Spell', 'Common'],
+['Rough', 'adjective', 'Red', 'Spell', 'Common'],
+['Roving', 'adjective', 'Red', 'Spell', 'Common'],
+['Rowdy', 'adjective', 'Red', 'Spell', 'Common'],
+['Rude', 'adjective', 'Red', 'Spell', 'Common'],
+['Shameless', 'adjective', 'Red', 'Spell', 'Common'],
+['Shimmy', 'verb', 'Red', 'Spell', 'Common'],
+['Sing', 'verb', 'Red', 'Spell', 'Common'],
+['Skintight', 'adjective', 'Red', 'Spell', 'Common'],
+['Slide', 'verb', 'Red', 'Spell', 'Common'],
+['Slip', 'verb', 'Red', 'Spell', 'Common'],
+['Somber', 'adjective', 'Red', 'Spell', 'Common'],
+['Sordid', 'adjective', 'Red', 'Spell', 'Common'],
+['Spicy', 'adjective', 'Red', 'Spell', 'Common'],
+['Splay', 'verb', 'Red', 'Spell', 'Common'],
+['Spread', 'verb', 'Red', 'Spell', 'Common'],
+['Squirming', 'adjective', 'Red', 'Spell', 'Common'],
+['Steamy', 'adjective', 'Red', 'Spell', 'Common'],
+['Straddle', 'verb', 'Red', 'Spell', 'Common'],
+['Stroke', 'verb', 'Red', 'Spell', 'Common'],
+['Sudden', 'verb', 'Red', 'Spell', 'Common'],
+['Sway', 'verb', 'Red', 'Spell', 'Common'],
+['Sweat', 'verb', 'Red', 'Spell', 'Common'],
+['Taste', 'verb', 'Red', 'Spell', 'Common'],
+['Teasing', 'adjective', 'Red', 'Spell', 'Common'],
+['Thrust', 'verb', 'Red', 'Spell', 'Common'],
+['Tongue', 'verb', 'Red', 'Spell', 'Common'],
+['Tsundere', 'adjective', 'Red', 'Spell', 'Common'],
+['Twine', 'verb', 'Red', 'Spell', 'Common'],
+['Underground', 'adjective', 'Red', 'Spell', 'Common'],
+['Vigorous', 'adjective', 'Red', 'Spell', 'Common'],
+['Vivid', 'adjective', 'Red', 'Spell', 'Common'],
+['Vulgar', 'adjective', 'Red', 'Spell', 'Common'],
+['Wanton', 'adjective', 'Red', 'Spell', 'Common'],
+['Wayward', 'adjective', 'Red', 'Spell', 'Common'],
+['Blast', 'verb', 'Red', 'Spell', 'Mythic'],
+['Bronze', 'adjective', 'Red', 'Spell', 'Mythic'],
+['Copper', 'adjective', 'Red', 'Spell', 'Mythic'],
+['Devil', 'adjective', 'Red', 'Spell', 'Mythic'],
+['Echo', 'verb', 'Red', 'Spell', 'Mythic'],
+['Flood', 'verb', 'Red', 'Spell', 'Mythic'],
+['Gothic', 'adjective', 'Red', 'Spell', 'Mythic'],
+['Hell', 'adjective', 'Red', 'Spell', 'Mythic'],
+['Psychic', 'adjective', 'Red', 'Spell', 'Mythic'],
+['Splatter', 'verb', 'Red', 'Spell', 'Mythic'],
+['Spray', 'verb', 'Red', 'Spell', 'Mythic'],
+['Amazon', 'adjective', 'Red', 'Spell', 'Rare'],
+['Charm', 'verb', 'Red', 'Spell', 'Rare'],
+['Consent', 'verb', 'Red', 'Spell', 'Rare'],
+['Crave', 'verb', 'Red', 'Spell', 'Rare'],
+['Decadent', 'adjective', 'Red', 'Spell', 'Rare'],
+['Duel', 'verb', 'Red', 'Spell', 'Rare'],
+['Exotic', 'adjective', 'Red', 'Spell', 'Rare'],
+['Fuel', 'verb', 'Red', 'Spell', 'Rare'],
+['Incest', 'adjective', 'Red', 'Spell', 'Rare'],
+['Indulgent', 'adjective', 'Red', 'Spell', 'Rare'],
+['Melt', 'verb', 'Red', 'Spell', 'Rare'],
+['Pulse', 'verb', 'Red', 'Spell', 'Rare'],
+['Race', 'verb', 'Red', 'Spell', 'Rare'],
+['Risk', 'verb', 'Red', 'Spell', 'Rare'],
+['Sensual', 'adjective', 'Red', 'Spell', 'Rare'],
+['Sinful', 'adjective', 'Red', 'Spell', 'Rare'],
+['Sultry', 'adjective', 'Red', 'Spell', 'Rare'],
+['Dancing', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Devilish', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Distract', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Enthusiastic', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Entice', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Erogenous', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Excited', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Fiery', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Flaunt', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Flexible', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Free', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Futanari', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Impish', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Insatiable', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Intense', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Langorous', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Latex', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Limber', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Nimble', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Passionate', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Play', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Ravish', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Relish', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Rouse', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Scarlet', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Seductive', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Sheer', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Shortstack', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Show', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Sin', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Supple', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Surprise', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Tease', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Thrill', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Tingle', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Trick', 'verb', 'Red', 'Spell', 'Uncommon'],
+['Willing', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Yearning', 'adjective', 'Red', 'Spell', 'Uncommon'],
+['Broth', 'thing', 'Red', 'Thing', 'Common'],
+['Bullet', 'thing', 'Red', 'Thing', 'Common'],
+['Choker', 'thing', 'Red', 'Thing', 'Common'],
+['Clit', 'thing', 'Red', 'Thing', 'Common'],
+['Cock', 'thing', 'Red', 'Thing', 'Common'],
+['Cunt', 'thing', 'Red', 'Thing', 'Common'],
+['Dance', 'thing', 'Red', 'Thing', 'Common'],
+['Dildo', 'thing', 'Red', 'Thing', 'Common'],
+['Dive', 'thing', 'Red', 'Thing', 'Common'],
+['Drink', 'thing', 'Red', 'Thing', 'Common'],
+['Game', 'thing', 'Red', 'Thing', 'Common'],
+['Heart', 'thing', 'Red', 'Thing', 'Common'],
+['High', 'thing', 'Red', 'Thing', 'Common'],
+['Hood', 'thing', 'Red', 'Thing', 'Common'],
+['Ink', 'thing', 'Red', 'Thing', 'Common'],
+['Itch', 'thing', 'Red', 'Thing', 'Common'],
+['Juice', 'thing', 'Red', 'Thing', 'Common'],
+['Libido', 'thing', 'Red', 'Thing', 'Common'],
+['Liquor', 'thing', 'Red', 'Thing', 'Common'],
+['Locker', 'thing', 'Red', 'Thing', 'Common'],
+['Miniskirt', 'thing', 'Red', 'Thing', 'Common'],
+['Mirror', 'thing', 'Red', 'Thing', 'Common'],
+['Nectar', 'thing', 'Red', 'Thing', 'Common'],
+['Oil', 'thing', 'Red', 'Thing', 'Common'],
+['Paint', 'thing', 'Red', 'Thing', 'Common'],
+['Party', 'thing', 'Red', 'Thing', 'Common'],
+['Plug', 'thing', 'Red', 'Thing', 'Common'],
+['Porn', 'thing', 'Red', 'Thing', 'Common'],
+['Probe', 'thing', 'Red', 'Thing', 'Common'],
+['Pussy', 'thing', 'Red', 'Thing', 'Common'],
+['Rave', 'thing', 'Red', 'Thing', 'Common'],
+['Slap', 'thing', 'Red', 'Thing', 'Common'],
+['Snack', 'thing', 'Red', 'Thing', 'Common'],
+['Sound', 'thing', 'Red', 'Thing', 'Common'],
+['Swat', 'thing', 'Red', 'Thing', 'Common'],
+['Sweat', 'thing', 'Red', 'Thing', 'Common'],
+['Taste', 'thing', 'Red', 'Thing', 'Common'],
+['Thighhighs', 'thing', 'Red', 'Thing', 'Common'],
+['Thong', 'thing', 'Red', 'Thing', 'Common'],
+['Zeal', 'thing', 'Red', 'Thing', 'Common'],
+['Craving', 'thing', 'Red', 'Thing', 'Mythic'],
+['Greed', 'thing', 'Red', 'Thing', 'Mythic'],
+['Mystery', 'thing', 'Red', 'Thing', 'Mythic'],
+['Remorse', 'thing', 'Red', 'Thing', 'Mythic'],
+['Risk', 'thing', 'Red', 'Thing', 'Mythic'],
+['Urge', 'thing', 'Red', 'Thing', 'Mythic'],
+['Alley', 'thing', 'Red', 'Thing', 'Rare'],
+['Bar', 'thing', 'Red', 'Thing', 'Rare'],
+['Gem', 'thing', 'Red', 'Thing', 'Rare'],
+['Jewel', 'thing', 'Red', 'Thing', 'Rare'],
+['Journey', 'thing', 'Red', 'Thing', 'Rare'],
+['Raft', 'thing', 'Red', 'Thing', 'Rare'],
+['Road', 'thing', 'Red', 'Thing', 'Rare'],
+['Ship', 'thing', 'Red', 'Thing', 'Rare'],
+['Stage', 'thing', 'Red', 'Thing', 'Rare'],
+['Street', 'thing', 'Red', 'Thing', 'Rare'],
+['Vacation', 'thing', 'Red', 'Thing', 'Rare'],
+['Aphrodisiac', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Appetite', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Ardor', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Consent', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Desire', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Fascination', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Impulse', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Intensity', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Longing', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Luck', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Lust', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Passion', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Suggestion', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Temptation', 'thing', 'Red', 'Thing', 'Uncommon'],
+['Ascetic', 'subject', 'White', 'Creature', 'Common'],
+['Barber', 'subject', 'White', 'Creature', 'Common'],
+['Celibate', 'subject', 'White', 'Creature', 'Common'],
+['Chef', 'subject', 'White', 'Creature', 'Common'],
+['Damsel', 'subject', 'White', 'Creature', 'Common'],
+['Doll', 'subject', 'White', 'Creature', 'Common'],
+['Healer', 'subject', 'White', 'Creature', 'Common'],
+['Intern', 'subject', 'White', 'Creature', 'Common'],
+['Librarian', 'subject', 'White', 'Creature', 'Common'],
+['Mother', 'subject', 'White', 'Creature', 'Common'],
+['Nun', 'subject', 'White', 'Creature', 'Common'],
+['Nurse', 'subject', 'White', 'Creature', 'Common'],
+['Parent', 'subject', 'White', 'Creature', 'Common'],
+['Patient', 'subject', 'White', 'Creature', 'Common'],
+['Student', 'subject', 'White', 'Creature', 'Common'],
+['Surgeon', 'subject', 'White', 'Creature', 'Common'],
+['Teacher', 'subject', 'White', 'Creature', 'Common'],
+['Virgin', 'subject', 'White', 'Creature', 'Common'],
+['Waitress', 'subject', 'White', 'Creature', 'Common'],
+['Cenobite', 'subject', 'White', 'Creature', 'Mythic'],
+['Goddess', 'subject', 'White', 'Creature', 'Mythic'],
+['Martyr', 'subject', 'White', 'Creature', 'Mythic'],
+['Prophet', 'subject', 'White', 'Creature', 'Mythic'],
+['Saint', 'subject', 'White', 'Creature', 'Mythic'],
+['Champion', 'subject', 'White', 'Creature', 'Rare'],
+['Guardian', 'subject', 'White', 'Creature', 'Rare'],
+['Hero', 'subject', 'White', 'Creature', 'Rare'],
+['Heroine', 'subject', 'White', 'Creature', 'Rare'],
+['Knight', 'subject', 'White', 'Creature', 'Rare'],
+['Savant', 'subject', 'White', 'Creature', 'Rare'],
+['Seeker', 'subject', 'White', 'Creature', 'Rare'],
+['Slayer', 'subject', 'White', 'Creature', 'Rare'],
+['Athlete', 'subject', 'White', 'Creature', 'Uncommon'],
+['Diplomat', 'subject', 'White', 'Creature', 'Uncommon'],
+['Guard', 'subject', 'White', 'Creature', 'Uncommon'],
+['Guide', 'subject', 'White', 'Creature', 'Uncommon'],
+['Judge', 'subject', 'White', 'Creature', 'Uncommon'],
+['Leader', 'subject', 'White', 'Creature', 'Uncommon'],
+['Superior', 'subject', 'White', 'Creature', 'Uncommon'],
+['Warrior', 'subject', 'White', 'Creature', 'Uncommon'],
+['Chaste', 'adjective', 'White', 'Spell', 'Common'],
+['Diplomatic', 'adjective', 'White', 'Spell', 'Common'],
+['Dispatch', 'adjective', 'White', 'Spell', 'Common'],
+['Drift', 'verb', 'White', 'Spell', 'Common'],
+['Eager', 'adjective', 'White', 'Spell', 'Common'],
+['Ease', 'verb', 'White', 'Spell', 'Common'],
+['Embrace', 'verb', 'White', 'Spell', 'Common'],
+['Euphoric', 'adjective', 'White', 'Spell', 'Common'],
+['Family', 'adjective', 'White', 'Spell', 'Common'],
+['Fertile', 'adjective', 'White', 'Spell', 'Common'],
+['Fresh', 'adjective', 'White', 'Spell', 'Common'],
+['Gold', 'adjective', 'White', 'Spell', 'Common'],
+['Good', 'adjective', 'White', 'Spell', 'Common'],
+['Hug', 'verb', 'White', 'Spell', 'Common'],
+['Kiss', 'verb', 'White', 'Spell', 'Common'],
+['Lace', 'adjective', 'White', 'Spell', 'Common'],
+['Life', 'adjective', 'White', 'Spell', 'Common'],
+['Massage', 'verb', 'White', 'Spell', 'Common'],
+['Merciful', 'adjective', 'White', 'Spell', 'Common'],
+['Relax', 'verb', 'White', 'Spell', 'Common'],
+['Rest', 'verb', 'White', 'Spell', 'Common'],
+['Rub', 'verb', 'White', 'Spell', 'Common'],
+['Serious', 'adjective', 'White', 'Spell', 'Common'],
+['Shy', 'adjective', 'White', 'Spell', 'Common'],
+['Silk', 'adjective', 'White', 'Spell', 'Common'],
+['Silver', 'adjective', 'White', 'Spell', 'Common'],
+['Sleep', 'verb', 'White', 'Spell', 'Common'],
+['Sleeping', 'adjective', 'White', 'Spell', 'Common'],
+['Slender', 'adjective', 'White', 'Spell', 'Common'],
+['Smile', 'verb', 'White', 'Spell', 'Common'],
+['Soak', 'verb', 'White', 'Spell', 'Common'],
+['Soothe', 'verb', 'White', 'Spell', 'Common'],
+['Steady', 'adjective', 'White', 'Spell', 'Common'],
+['Sweet', 'adjective', 'White', 'Spell', 'Common'],
+['Tough', 'adjective', 'White', 'Spell', 'Common'],
+['Virile', 'adjective', 'White', 'Spell', 'Common'],
+['Ancient', 'adjective', 'White', 'Spell', 'Mythic'],
+['Angel', 'adjective', 'White', 'Spell', 'Mythic'],
+['Birth', 'verb', 'White', 'Spell', 'Mythic'],
+['Ethereal', 'adjective', 'White', 'Spell', 'Mythic'],
+['Fight', 'verb', 'White', 'Spell', 'Mythic'],
+['Holy', 'adjective', 'White', 'Spell', 'Mythic'],
+['Pray', 'verb', 'White', 'Spell', 'Mythic'],
+['Pure', 'adjective', 'White', 'Spell', 'Mythic'],
+['Release', 'verb', 'White', 'Spell', 'Mythic'],
+['Soar', 'verb', 'White', 'Spell', 'Mythic'],
+['Virgin', 'adjective', 'White', 'Spell', 'Mythic'],
+['Advanced', 'adjective', 'White', 'Spell', 'Rare'],
+['Awakened', 'adjective', 'White', 'Spell', 'Rare'],
+['Bandage', 'verb', 'White', 'Spell', 'Rare'],
+['Brace', 'verb', 'White', 'Spell', 'Rare'],
+['Cleanse', 'verb', 'White', 'Spell', 'Rare'],
+['Critical', 'adjective', 'White', 'Spell', 'Rare'],
+['Divine', 'adjective', 'White', 'Spell', 'Rare'],
+['Evolved', 'adjective', 'White', 'Spell', 'Rare'],
+['Expert', 'adjective', 'White', 'Spell', 'Rare'],
+['Heal', 'verb', 'White', 'Spell', 'Rare'],
+['Polish', 'verb', 'White', 'Spell', 'Rare'],
+['Refined', 'adjective', 'White', 'Spell', 'Rare'],
+['Repair', 'verb', 'White', 'Spell', 'Rare'],
+['Sweep', 'verb', 'White', 'Spell', 'Rare'],
+['Vestal', 'adjective', 'White', 'Spell', 'Rare'],
+['Virtuous', 'adjective', 'White', 'Spell', 'Rare'],
+['Wash', 'verb', 'White', 'Spell', 'Rare'],
+['Ardent', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Athletic', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Attract', 'verb', 'White', 'Spell', 'Uncommon'],
+['Bear', 'verb', 'White', 'Spell', 'Uncommon'],
+['Coax', 'verb', 'White', 'Spell', 'Uncommon'],
+['Dedicated', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Delicate', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Elegant', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Float', 'verb', 'White', 'Spell', 'Uncommon'],
+['Glide', 'verb', 'White', 'Spell', 'Uncommon'],
+['Help', 'verb', 'White', 'Spell', 'Uncommon'],
+['High', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Innocent', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Inspect', 'verb', 'White', 'Spell', 'Uncommon'],
+['Personal', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Profound', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Protect', 'verb', 'White', 'Spell', 'Uncommon'],
+['Radiant', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Rally', 'verb', 'White', 'Spell', 'Uncommon'],
+['Resist', 'verb', 'White', 'Spell', 'Uncommon'],
+['Riveting', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Share', 'verb', 'White', 'Spell', 'Uncommon'],
+['Skilled', 'adjective', 'White', 'Spell', 'Uncommon'],
+['Strengthen', 'verb', 'White', 'Spell', 'Uncommon'],
+['Struggle', 'verb', 'White', 'Spell', 'Uncommon'],
+['Support', 'verb', 'White', 'Spell', 'Uncommon'],
+['Art', 'thing', 'White', 'Thing', 'Common'],
+['Barrier', 'thing', 'White', 'Thing', 'Common'],
+['Bath', 'thing', 'White', 'Thing', 'Common'],
+['Bathroom', 'thing', 'White', 'Thing', 'Common'],
+['Beach', 'thing', 'White', 'Thing', 'Common'],
+['Bliss', 'thing', 'White', 'Thing', 'Common'],
+['Church', 'thing', 'White', 'Thing', 'Common'],
+['Cloud', 'thing', 'White', 'Thing', 'Common'],
+['Clue', 'thing', 'White', 'Thing', 'Common'],
+['Compromise', 'thing', 'White', 'Thing', 'Common'],
+['Cream', 'thing', 'White', 'Thing', 'Common'],
+['Crew', 'thing', 'White', 'Thing', 'Common'],
+['Dream', 'thing', 'White', 'Thing', 'Common'],
+['Halo', 'thing', 'White', 'Thing', 'Common'],
+['Harmony', 'thing', 'White', 'Thing', 'Common'],
+['Hope', 'thing', 'White', 'Thing', 'Common'],
+['Hospital', 'thing', 'White', 'Thing', 'Common'],
+['Idea', 'thing', 'White', 'Thing', 'Common'],
+['Invitation', 'thing', 'White', 'Thing', 'Common'],
+['Judge', 'thing', 'White', 'Thing', 'Common'],
+['Jury', 'thing', 'White', 'Thing', 'Common'],
+['Lap', 'thing', 'White', 'Thing', 'Common'],
+['Library', 'thing', 'White', 'Thing', 'Common'],
+['Mercy', 'thing', 'White', 'Thing', 'Common'],
+['Message', 'thing', 'White', 'Thing', 'Common'],
+['Passage', 'thing', 'White', 'Thing', 'Common'],
+['Pity', 'thing', 'White', 'Thing', 'Common'],
+['Plan', 'thing', 'White', 'Thing', 'Common'],
+['Purity', 'thing', 'White', 'Thing', 'Common'],
+['Quest', 'thing', 'White', 'Thing', 'Common'],
+['School', 'thing', 'White', 'Thing', 'Common'],
+['Sense', 'thing', 'White', 'Thing', 'Common'],
+['Shower', 'thing', 'White', 'Thing', 'Common'],
+['Spark', 'thing', 'White', 'Thing', 'Common'],
+['Strike', 'thing', 'White', 'Thing', 'Common'],
+['Trial', 'thing', 'White', 'Thing', 'Common'],
+['Voice', 'thing', 'White', 'Thing', 'Common'],
+['Ward', 'thing', 'White', 'Thing', 'Common'],
+['Sky', 'thing', 'White', 'Thing', 'Mythic'],
+['Soul', 'thing', 'White', 'Thing', 'Mythic'],
+['Star', 'thing', 'White', 'Thing', 'Mythic'],
+['Sun', 'thing', 'White', 'Thing', 'Mythic'],
+['Time', 'thing', 'White', 'Thing', 'Mythic'],
+['Wind', 'thing', 'White', 'Thing', 'Mythic'],
+['Wish', 'thing', 'White', 'Thing', 'Mythic'],
+['Accord', 'thing', 'White', 'Thing', 'Rare'],
+['Destiny', 'thing', 'White', 'Thing', 'Rare'],
+['Name', 'thing', 'White', 'Thing', 'Rare'],
+['Oath', 'thing', 'White', 'Thing', 'Rare'],
+['Promise', 'thing', 'White', 'Thing', 'Rare'],
+['Solution', 'thing', 'White', 'Thing', 'Rare'],
+['Success', 'thing', 'White', 'Thing', 'Rare'],
+['Truth', 'thing', 'White', 'Thing', 'Rare'],
+['Vision', 'thing', 'White', 'Thing', 'Rare'],
+['Anchor', 'thing', 'White', 'Thing', 'Uncommon'],
+['Bell', 'thing', 'White', 'Thing', 'Uncommon'],
+['Blade', 'thing', 'White', 'Thing', 'Uncommon'],
+['Book', 'thing', 'White', 'Thing', 'Uncommon'],
+['Candle', 'thing', 'White', 'Thing', 'Uncommon'],
+['Clock', 'thing', 'White', 'Thing', 'Uncommon'],
+['Feather', 'thing', 'White', 'Thing', 'Uncommon'],
+['Fist', 'thing', 'White', 'Thing', 'Uncommon'],
+['Fountain', 'thing', 'White', 'Thing', 'Uncommon'],
+['Gun', 'thing', 'White', 'Thing', 'Uncommon'],
+['Hammer', 'thing', 'White', 'Thing', 'Uncommon'],
+['Journal', 'thing', 'White', 'Thing', 'Uncommon'],
+['Key', 'thing', 'White', 'Thing', 'Uncommon'],
+['Panties', 'thing', 'White', 'Thing', 'Uncommon'],
+['Potion', 'thing', 'White', 'Thing', 'Uncommon'],
+['Ring', 'thing', 'White', 'Thing', 'Uncommon'],
+['Shield', 'thing', 'White', 'Thing', 'Uncommon'],
+['Staff', 'thing', 'White', 'Thing', 'Uncommon'],
+['Statue', 'thing', 'White', 'Thing', 'Uncommon']
+]
+
+	var drawpile = [];
+	var ondeck = [];
+	var onpile = [];
+	var choices = [];
+	var countdisplay = '';
+	var deckdisplay = '';
+	var drawdisplay = '';
+	var counter = 0;
+	
+	refresh();
+
+
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
+function arrayEquals(a, b) {
+  return Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index]);
+}
+
+	function getchecks(){
+		var lol = [];
+		var checkboxes = document.querySelectorAll('input[type=checkbox]:checked')
+			for (var i = 0; i < checkboxes.length; i++) {
+				lol.push(checkboxes[i].value)
+		}
+
+		if(!arrayEquals(lol, choices) || drawpile.length == 0) {
+			choices = lol;
+			console.log(choices);
+			var newData1 = dict.filter(function(d,i){return choices.includes(d[2]) && choices.includes(d[4]);});
+			var rndsubject = shuffle(newData1.filter(function(d,i){return d[1]=='subject'}));
+			var rndadjective = shuffle(newData1.filter(function(d,i){return d[1]=='adjective'}));
+			var rndverb = shuffle(newData1.filter(function(d,i){return d[1]=='verb'}));
+			var rndthing = shuffle(newData1.filter(function(d,i){return d[1]=='thing'}));
+			var rndcounter = Math.min(rndsubject.length, rndadjective.length, rndverb.length, rndthing.length)-1;
+			
+			countdisplay = '';
+			countdisplay += '<br>Black subject '+dict.filter(function(d) {return d[2]=='Black' && d[1]=='subject';}).length;
+			countdisplay += '<br>Blue subject '+dict.filter(function(d) {return d[2]=='Blue' && d[1]=='subject';}).length;
+			countdisplay += '<br>Green subject '+dict.filter(function(d) {return d[2]=='Green' && d[1]=='subject';}).length;
+			countdisplay += '<br>White subject '+dict.filter(function(d) {return d[2]=='White' && d[1]=='subject';}).length;
+			countdisplay += '<br>Red subject '+dict.filter(function(d) {return d[2]=='Red' && d[1]=='subject';}).length;
+
+			countdisplay += '<br>Black adjective '+dict.filter(function(d) {return d[2]=='Black' && d[1]=='adjective';}).length;
+			countdisplay += '<br>Blue adjective '+dict.filter(function(d) {return d[2]=='Blue' && d[1]=='adjective';}).length;
+			countdisplay += '<br>Green adjective '+dict.filter(function(d) {return d[2]=='Green' && d[1]=='adjective';}).length;
+			countdisplay += '<br>White adjective '+dict.filter(function(d) {return d[2]=='White' && d[1]=='adjective';}).length;
+			countdisplay += '<br>Red adjective '+dict.filter(function(d) {return d[2]=='Red' && d[1]=='adjective';}).length;
+
+			countdisplay += '<br>Black verb '+dict.filter(function(d) {return d[2]=='Black' && d[1]=='verb';}).length;
+			countdisplay += '<br>Blue verb '+dict.filter(function(d) {return d[2]=='Blue' && d[1]=='verb';}).length;
+			countdisplay += '<br>Green verb '+dict.filter(function(d) {return d[2]=='Green' && d[1]=='verb';}).length;
+			countdisplay += '<br>White verb '+dict.filter(function(d) {return d[2]=='White' && d[1]=='verb';}).length;
+			countdisplay += '<br>Red verb '+dict.filter(function(d) {return d[2]=='Red' && d[1]=='verb';}).length;
+
+			countdisplay += '<br>Black thing '+dict.filter(function(d) {return d[2]=='Black' && d[1]=='thing';}).length;
+			countdisplay += '<br>Blue thing '+dict.filter(function(d) {return d[2]=='Blue' && d[1]=='thing';}).length;
+			countdisplay += '<br>Green thing '+dict.filter(function(d) {return d[2]=='Green' && d[1]=='thing';}).length;
+			countdisplay += '<br>White thing '+dict.filter(function(d) {return d[2]=='White' && d[1]=='thing';}).length;
+			countdisplay += '<br>Red thing '+dict.filter(function(d) {return d[2]=='Red' && d[1]=='thing';}).length;
+
+			document.getElementById('countdisplay').innerHTML = `${countdisplay}`;
+			
+			drawpile = [];
+			
+			var testc = choices.includes('Creature');
+			var tests = choices.includes('Spell');
+			var testt = choices.includes('Thing');
+			
+			for (var i = 0; i < rndcounter; i++) {
+				if(i % 5 == 0) {
+				if(testc) drawpile.push([rndadjective[i], rndsubject[i]]);
+				if(testt) drawpile.push([rndverb[i], rndthing[i]]);
+				}
+				if(i % 5 == 1) {
+				if(testt) drawpile.push([rndadjective[i], rndthing[i]]);
+				if(testc) drawpile.push([rndverb[i], rndsubject[i]]);
+				}
+				if(i % 5 == 2) {
+				if(tests) drawpile.push([rndadjective[i], rndverb[i]]);
+				if(testc) drawpile.push([rndthing[i], rndsubject[i]]);
+				}
+				if(i % 5 == 3) {
+				if(testc) drawpile.push([rndsubject[i], rndsubject[i-1]]);
+				if(testt) drawpile.push([rndthing[i], rndthing[i-1]]);
+				}
+				if(i % 5 == 4) {
+				if(testt) drawpile.push([rndsubject[i], rndthing[i]]);
+				if(tests) drawpile.push([rndadjective[i], rndverb[i]]);
+				}
+				
+			}
+
+		drawpile.sort((a, b) => a[1][0].localeCompare(b[1][0]));
+		drawpile.sort((a, b) => a[0][0].localeCompare(b[0][0]));
+		drawpile.sort((a, b) => a[1][2].localeCompare(b[1][2]));
+		drawpile.sort((a, b) => rtest(a, b));
+		drawpile.sort((a, b) => a[1][3].localeCompare(b[1][3]));
+
+		deckdisplay = '';
+		for (let i = 0; i < drawpile.length; i++) {
+			deckdisplay += drawpile[i][1][2]+' '+drawpile[i][1][3]+' '+drawpile[i][1][4]+' - '+drawpile[i][0][0]+' '+drawpile[i][1][0]+'<br>';
+		}
+		document.getElementById('deckdisplay').innerHTML = `${deckdisplay}`;
+		
+		drawpile = shuffle(drawpile);
+	
+		counter = 0;
+		}
+	}
+
+	function refresh(){
+		ondeck = [];
+		onpile = [];
+		drawpile = [];
+		update();
+		getchecks();
+	}
+
+	function rtest(a,b){
+		if(a[1][4]=="Mythic" && b[1][4]!="Mythic") return -1;
+		if(a[1][4]=="Rare" && b[1][4]!="Mythic" && b[1][4]!= "Rare") return -1;
+		if(a[1][4]=="Uncommon" && b[1][4]=="Common") return -1;
+
+		if(b[1][4]=="Mythic" && a[1][4]!="Mythic") return 1;
+		if(b[1][4]=="Rare" && a[1][4]!="Mythic" && b[1][4]!= "Rare") return 1;
+		if(b[1][4]=="Uncommon" && a[1][4]=="Common") return 1;
+	}
+
+	function iget(x){
+		var results = "";
+
+		if(x[2]=="Black") {results+='<img width=20 src="icons/B.png"> '; }
+		else if(x[2]=="Red") {results+='<img width=20 src="icons/R.png"> '; }
+		else if(x[2]=="White") {results+='<img width=20 src="icons/W.png"> '; }
+		else if(x[2]=="Green") {results+='<img width=20 src="icons/G.png"> '; }
+		else if(x[2]=="Blue") {results+='<img width=20 src="icons/U.png"> '; }
+
+		if(x[3]=="Creature") {results+='<img width=18 src="icons/Creature_symbol.png"> '; }
+		else if(x[3]=="Thing") {results+='<img width=15 src="icons/Sorcery_symbol.png"> '; }
+		else if(x[3]=="Spell") {results+='<img width=15 src="icons/Instant_symbol.png"> '; }
+
+		if(x[4]=="Common") {results+='<img width=15 src="icons/common.svg"> '; }
+		else if(x[4]=="Uncommon") {results+='<img width=18 src="icons/uncommon.svg"> '; }
+		else if(x[4]=="Rare") {results+='<img width=21 src="icons/rare.svg"> '; }
+		else if(x[4]=="Mythic") {results+='<img width=24 src="icons/mythic.svg"> '; }
+
+		return results;
+
+	}
+
+	function mget(x){
+		var results = "";
+
+		if(x==0) {results+='<img width=10 src="icons/0.svg">'; }
+		else if(x==1) {results+='<img width=11 src="icons/1.svg">'; }
+		else if(x==2) {results+='<img width=12 src="icons/2.svg">'; }
+		else if(x==3) {results+='<img width=13 src="icons/3.svg">'; }
+		else if(x==4) {results+='<img width=14 src="icons/4.svg">'; }
+		else if(x==5) {results+='<img width=15 src="icons/5.svg">'; }
+		else if(x==6) {results+='<img width=16 src="icons/6.svg">'; }
+		else if(x==7) {results+='<img width=17 src="icons/7.svg">'; }
+		else if(x==8) {results+='<img width=18 src="icons/8.svg">'; }
+		else if(x==9) {results+='<img width=19 src="icons/9.svg">'; }
+		else if(x==10) {results+='<img width=20 src="icons/10.svg">'; }
+		else if(x==11) {results+='<img width=21 src="icons/11.svg">'; }
+		else if(x==12) {results+='<img width=22 src="icons/12.svg">'; }
+		else if(x==13) {results+='<img width=23 src="icons/13.svg">'; }
+		else if(x==14) {results+='<img width=24 src="icons/14.svg">'; }
+		else if(x==15) {results+='<img width=25 src="icons/15.svg">'; }
+
+	return results;
+	
+	}
+
+
+	function update(){
+		
+		ondeck.sort((a, b) => a[1][0].localeCompare(b[1][0]));
+		ondeck.sort((a, b) => a[0][0].localeCompare(b[0][0]));
+		ondeck.sort((a, b) => rtest(a, b));
+		ondeck.sort((a, b) => a[1][3].localeCompare(b[1][3]));
+
+		var drawdisplay = '';
+		
+		for (let i = 0; i < ondeck.length; i++) {
+			drawdisplay += iget(ondeck[i][1])+' '+ondeck[i][1][2]+' '+ondeck[i][1][3]+' - '+ondeck[i][0][0]+' '+ondeck[i][1][0]+'<br>';
+		}
+		document.getElementById('drawdisplay').innerHTML = `${drawdisplay}`;
+
+		var piledisplay = '';
+
+		for (let i = 0; i < onpile.length; i++) {
+			piledisplay += iget(onpile[i][1])+' '+onpile[i][1][2]+' '+onpile[i][1][3]+' - '+onpile[i][0][0]+' '+onpile[i][1][0]+'<br>';
+		}
+		document.getElementById('piledisplay').innerHTML = `${piledisplay}`;
+
+
+	}
+		
+	function hookup(){
+		getchecks();
+		ondeck.push(drawpile[counter]);
+		onpile.push(drawpile[counter]);
+		counter++;
+		update();
+	}
+
+	function crunked(){
+		for (let i = 0; i < 10; i++) {
+			hookup();
+			}
+	}
+
+
+</script>
+
+</body>
+
+</html>
